@@ -1,18 +1,18 @@
 import tkinter as tk
+from modes import Modes
+from tkinter import ttk
 
 root = tk.Tk()
 root.title("Minesweeper gamemode selection")
-root.geometry("800x600")
+root.geometry("400x300")
+modes = Modes().modesArray()
 
-canvas_width = 800
-canvas_height = 600
-canvas = tk.Canvas(root, 
-                   width=canvas_width, 
-                   height=canvas_height, 
-                   bg="black")
 
-canvas.pack(pady=20, padx=20)
+modes_var = tk.StringVar(root)
+modes_var.set(modes[0])
 
+dropdown = ttk.Combobox(root, textvariable=modes_var, values=modes, state="readonly")
+dropdown.pack()
 
 
 
