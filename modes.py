@@ -2,8 +2,8 @@ class Modes():
     def __init__(self):
         self.modes = {
             "easy": {
-                "w": 5,
-                "h": 5,
+                "w": 10,
+                "h": 10,
                 "mines": 4,
                 "name": "Easy"
             },
