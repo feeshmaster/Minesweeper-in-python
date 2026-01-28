@@ -75,7 +75,8 @@ class MineSweeper():
             self.grid[x][y].setMine()
         for x in range(self.w):
             for y in range(self.h):
-                self.grid[x][y].draw()
+                self.grid[x][y].setGrid(self.grid)
+                self.grid[x][y].show()
     def start(self):
         self.root.mainloop()
     def destroy(self):
