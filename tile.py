@@ -181,6 +181,8 @@ class Tile:
     def show(self, flag=None):
         if self.shown:
             return
+
+
         if flag is not None:
             if flag:
                 self.draw_sprite("flag")
@@ -201,32 +203,46 @@ class Tile:
 
         if self.sprite:
             self.draw_sprite(self.sprite)
+        if self.mines == 0:
+            self.showAdjacent(self.x, self.y)
 
-    def showAdjacent(self):
-        stack = [(self.x, self.y)]
+    def showAdjacent(self, x, y):
         offsets = [
-        [-1, 1], [0, 1], [1, 1],
-        [-1, 0],        [1, 0],
-        [-1,-1], [0,-1], [1,-1]
+        (-1, -1), (0, -1), (1, -1),
+        (-1,  0),          (1,  0),
+        (-1,  1), (0,  1), (1,  1)
     ]
 
-        while stack:
-            x, y = stack.pop()
-            tile = self.grid[x][y]
+        stack = [(x, y)]
+        visited = set()
 
-            if tile.shown or tile.flagged or tile.isMine:
+        while stack:
+            cx, cy = stack.pop()
+
+            if (cx, cy) in visited:
+                continue
+            visited.add((cx, cy))
+
+            tile = self.grid[cx][cy]
+
+            if tile.flagged or tile.isMine:
                 continue
 
-            tile.shown = True  # mark as shown first
-            tile.show(flag=False)  # draw tile
+            if not tile.shown:
+                tile.show()  
 
             if tile.mines != 0:
-                continue  # only expand zeros
+                continue
 
             for dx, dy in offsets:
-                nx = x + dx
-                ny = y + dy
+                nx = cx + dx
+                ny = cy + dy
+
                 if 0 <= nx < len(self.grid) and 0 <= ny < len(self.grid[0]):
                     neighbor = self.grid[nx][ny]
-                    if not neighbor.shown and not neighbor.flagged and not neighbor.isMine:
-                        stack.append((nx, ny))  
+
+                    if not neighbor.shown and not neighbor.flagged:
+                        stack.append((nx, ny))
+
+
+

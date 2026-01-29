@@ -2,8 +2,6 @@ from modes import Modes
 import ttkbootstrap as tb
 from tile import Tile
 import random
-
-
 class MineSweeper:
     def __init__(self, difficulty):
         self.mode = Modes().modes[difficulty]
@@ -13,17 +11,47 @@ class MineSweeper:
         root = tb.Window(themename="darkly")
         root.title(f"Minesweeper {self.mode['name']}")
         root.geometry("800x600")
-
+        self.ticks = 0
+        self.movesMade = 0
+        self.lost = False
         self.root = root
         self.init_scoreboard()
         self.init_canvas()
         self.init_game()
         self.canvas.bind("<Button-1>", self.on_canvas_click)
         self.canvas.bind("<Button-3>", self.on_right_click)
+        self.time.update()
+        self.moves.update()
+        self.tick()
         self.start()
 
+    def create_popup(self, t):
+        top = tb.Toplevel(self.root)
+        top.title("Message")
+        top.geometry("300x140")
+        top.resizable(False, False)
+
+        top.grab_set()
+
+        tb.Label(
+        top,
+        text=t,
+        bootstyle="info",
+        font=("Segoe UI", 12, "bold")
+
+    ).pack(pady=(25, 15))
+
+        tb.Button(
+        top,
+        text="Close",
+        command=lambda: self.close((top, self.root)),
+        bootstyle="danger"
+    ).pack(pady=10)
+    def close(self, t):
+        for i in t:
+            i.destroy()
     def init_scoreboard(self):
-        scoreBoard = tb.Frame(self.root)
+        scoreBoard = tb.Frame(self.root, background=self.root.cget('bg'))
         scoreBoard.pack(anchor="nw", padx=20, pady=10)
 
         tb.Label(scoreBoard, text="Score ", font=("Segoe UI", 16, "bold")).pack(
@@ -39,13 +67,13 @@ class MineSweeper:
         self.mines.pack(side="left")
 
         tb.Label(scoreBoard, text="Moves ", font=("Segoe UI", 16, "bold")).pack(
-            side="left", padx=(200, 0)
+            side="left", padx=(160, 0)
         )
         self.moves = tb.Label(scoreBoard, text="0", font=("Segoe UI", 16, "bold"))
         self.moves.pack(side="left")
 
         tb.Label(scoreBoard, text="Time ", font=("Segoe UI", 16, "bold")).pack(
-            side="left", padx=(60, 0)
+            side="left", padx=(10, 0)
         )
         self.time = tb.Label(scoreBoard, text="0", font=("Segoe UI", 16, "bold"))
         self.time.pack(side="left")
@@ -94,9 +122,28 @@ class MineSweeper:
         if not self.minesPlaced:
             self.place_mines(gx, gy)
             self.minesPlaced = True
-
+        if not tile.shown:
+            self.movesMade += 1 
+            self.moves.config(text=str(self.movesMade)) 
+        if tile.isMine and not tile.flagged:
+            self.lose()
         tile.show()
-
+        self.winCheck()
+        
+        
+        
+    def winCheck(self):
+        mines = self.mode["mines"]
+        right = 0
+        unshown = 0
+        for x in self.grid:
+            for tile in x:
+                if not tile.shown:
+                    unshown += 1
+                    if tile.isMine:
+                        right += 1
+        if unshown == right:
+            self.win()
     def on_right_click(self, event):
         gx = (event.x - self.offsetX) // self.tileSize
         gy = (event.y - self.offsetY) // self.tileSize
@@ -110,8 +157,9 @@ class MineSweeper:
             self.minesLeft -= 1
         else:
             self.minesLeft += 1
-        self.mines.config(text=str(self.minesLeft))
+        self.mines.config(text=str(self.minesLeft)) 
         tile.show(flag=tile.flagged)
+        self.winCheck()
 
     def place_mines(self, safe_x, safe_y):
         placed = 0
@@ -135,6 +183,22 @@ class MineSweeper:
         for x in range(self.w):
             for y in range(self.h):
                 self.grid[x][y].setGrid(self.grid)
-
-
-ms = MineSweeper("easy")
+    def tick(self): 
+        self.ticks += 1 
+        self.time.config(text=str(self.ticks)) 
+        
+        self.time.after(1000, self.tick)
+        score = 10000
+        if self.movesMade and self.ticks:
+            score -= int((self.ticks * self.movesMade))
+        self.score.config(text=str(score))
+    def lose(self):
+        self.lost = True
+        for x in self.grid:
+            for tile in x:
+                tile.show()
+        self.create_popup("You lose!")
+    def win(self):
+       if self.lost:
+           return
+       self.create_popup("You win!") 
