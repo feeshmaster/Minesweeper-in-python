@@ -2,16 +2,22 @@ class Modes():
     def __init__(self):
         self.modes = {
             "easy": {
-                "w": 10,
-                "h": 10,
-                "mines": 12,
+                "w": 9,
+                "h": 9,
+                "mines": 10,
                 "name": "Easy"
             },
             "medium": {
-                "w": 7,
-                "h": 7,
-                "mines": 8,
+                "w": 16,
+                "h": 16,
+                "mines": 40,
                 "name": "Medium"
+            },
+            "hard": {
+                "w": 30,
+                "h": 16,
+                "mines": 99,
+                "name": "Hard"
             }
         }
     def modesArray(self):
