@@ -2,13 +2,16 @@ from modes import Modes
 import ttkbootstrap as tb
 from tile import Tile
 import random
+from mode_selector import GameSelector
+
 class MineSweeper:
-    def __init__(self, difficulty):
+    def __init__(self, difficulty, root):
         self.mode = Modes().modes[difficulty]
+        self.root = root
         self.init_root()
 
     def init_root(self):
-        root = tb.Window(themename="darkly")
+        root = self.root
         root.title(f"Minesweeper {self.mode['name']}")
         root.geometry("800x600")
         self.ticks = 0
@@ -44,14 +47,15 @@ class MineSweeper:
         tb.Button(
         top,
         text="Close",
-        command=lambda: self.close((top, self.root)),
+        command=lambda: self.close(top),
         bootstyle="danger"
     ).pack(pady=10)
     def close(self, t):
-        for i in t:
-            i.destroy()
+        t.destroy()
+        GameSelector(self.root)
+        
     def init_scoreboard(self):
-        scoreBoard = tb.Frame(self.root, background=self.root.cget('bg'))
+        scoreBoard = tb.Frame(self.root)
         scoreBoard.pack(anchor="nw", padx=20, pady=10)
 
         tb.Label(scoreBoard, text="Score ", font=("Segoe UI", 16, "bold")).pack(
@@ -129,9 +133,7 @@ class MineSweeper:
             self.lose()
         tile.show()
         self.winCheck()
-        
-        
-        
+
     def winCheck(self):
         mines = self.mode["mines"]
         right = 0
@@ -186,7 +188,7 @@ class MineSweeper:
     def tick(self): 
         self.ticks += 1 
         self.time.config(text=str(self.ticks)) 
-        
+
         self.time.after(1000, self.tick)
         score = 10000
         if self.movesMade and self.ticks:
@@ -199,6 +201,7 @@ class MineSweeper:
                 tile.show()
         self.create_popup("You lose!")
     def win(self):
-       if self.lost:
-           return
-       self.create_popup("You win!") 
+        if self.lost:
+            return
+        self.create_popup("You win!")
+# MineSweeper("hard")
