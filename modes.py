@@ -4,7 +4,7 @@ class Modes():
             "easy": {
                 "w": 10,
                 "h": 10,
-                "mines": 4,
+                "mines": 12,
                 "name": "Easy"
             },
             "medium": {
