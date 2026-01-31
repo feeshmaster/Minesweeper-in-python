@@ -3,7 +3,7 @@ import ttkbootstrap as tb
 from tile import Tile
 import random
 from mode_selector import GameSelector
-
+import asyncio
 class MineSweeper:
     def __init__(self, difficulty, root):
         self.mode = Modes().modes[difficulty]
@@ -130,7 +130,7 @@ class MineSweeper:
             self.movesMade += 1 
             self.moves.config(text=str(self.movesMade)) 
         if tile.isMine and not tile.flagged:
-            self.lose()
+            self.lose(tile)
         tile.show()
         self.winCheck()
 
@@ -194,7 +194,7 @@ class MineSweeper:
         if self.movesMade and self.ticks:
             score -= int((self.ticks * self.movesMade))
         self.score.config(text=str(score))
-    def lose(self):
+    def lose(self, tile):
         self.lost = True
         for x in self.grid:
             for tile in x:
@@ -204,4 +204,7 @@ class MineSweeper:
         if self.lost:
             return
         self.create_popup("You win!")
+    async def explode_animation(self, x, y):
+        asyncio.wait(2)
+        print(x,y)        
 # MineSweeper("hard")
