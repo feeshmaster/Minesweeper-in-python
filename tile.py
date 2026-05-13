@@ -1,6 +1,6 @@
 import random
 
-# Sprites for drawing numbers, flags, mines
+
 sprites = {
     "1": [
         [".", "1", "."],
@@ -102,9 +102,9 @@ class Tile:
         self.isMine = isMine
         self.flagged = False
         self.shown = False
-        self.sprite = None  # for drawing
-        self.mines = 0  # for logic
-        self.grid = None  # will be set later
+        self.sprite = None  
+        self.mines = 0  
+        self.grid = None  
 
     def draw(self):
         x1 = self.x * self.tileSize + self.offsetX
@@ -113,13 +113,13 @@ class Tile:
         y2 = y1 + self.tileSize
 
         edge = self.edge
-        # Bottom gray
+        
         self.canvas.create_rectangle(x1, y1, x2, y2, fill="#7d7d7d", outline="")
-        # Top white
+        
         self.canvas.create_rectangle(
             x1, y1, x2 - edge, y2 - edge, fill="#ffffff", outline=""
         )
-        # Middle gray
+        
         self.canvas.create_rectangle(
             x1 + edge, y1 + edge, x2 - edge, y2 - edge, fill="#bababa", outline=""
         )
